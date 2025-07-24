@@ -14,15 +14,15 @@ PLAYER_NAMES = [f"Player {i}" for i in range(1, 9)]
 DUEL_SKILLS = np.linspace(25, 50, 8)
 FFA_SKILLS = np.linspace(25, 50, 8)
 
-def load_players(config_path=None, num_players=8):
+def load_players(config_path=None, fallback_num_players=8):
     if config_path and Path(config_path).exists():
         df = pd.read_csv(config_path)
-        return df["Player"].tolist(), df["Duel_Skill"].to_numpy(), df["FFA_Skill"].to_numpy()
+        return df["Player"].tolist(), df["Duel_Skill"].to_numpy(), df["FFA_Skill"].to_numpy(), len(df)
     else:
-        names = [f"Player {i}" for i in range(1, num_players + 1)]
-        duel = np.linspace(25, 50, num_players)
-        ffa = np.linspace(25, 50, num_players)
-        return names, duel, ffa
+        names = [f"Player {i}" for i in range(1, fallback_num_players + 1)]
+        duel = np.linspace(25, 50, fallback_num_players)
+        ffa = np.linspace(25, 50, fallback_num_players)
+        return names, duel, ffa, fallback_num_players
 
 
 def logistic_win_probability(skill_a, skill_b, scale=10):
@@ -178,7 +178,8 @@ def run_simulation(args):
 
     # load from config or generate default
     if args.config:
-        names, duel, ffa = load_players(args.config, args.num_players)
+        names, duel, ffa, actual_count = load_players(args.config, args.num_players)
+        args.num_players = actual_count  # override for consistency
         run_one_sim(names, duel, ffa, Path(args.output_dir))
     else:
         n = args.num_players
