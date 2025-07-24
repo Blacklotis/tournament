@@ -9,7 +9,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--simulations", "1000",
-                "--rrr_matches", "8",
+                "--num_players", "10",
                 "--min_mult", "1.0",
                 "--max_mult", "2.0",
                 "--output_dir", "tournament_results"
